@@ -1,5 +1,6 @@
 package org.golfclub.golfclubtournament.controller;
 
+import org.golfclub.golfclubtournament.model.Member;
 import org.golfclub.golfclubtournament.repository.MemberRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +12,8 @@ public class MemberController {
 
     private final MemberRepository memberRepository;
 
-    public MemberController(MemberRepository MemberRepository) {
-        this.memberRepository = MemberRepository;
+    public MemberController(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     @GetMapping

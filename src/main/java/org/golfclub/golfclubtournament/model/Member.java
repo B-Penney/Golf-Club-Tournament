@@ -1,7 +1,5 @@
 package org.golfclub.golfclubtournament.model;
 
-
-import org.golfclub.golfclubtournament.model.Tournament;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
