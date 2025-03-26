@@ -1,44 +1,42 @@
 package org.golfclub.golfclubtournament.controller;
 
+import org.golfclub.golfclubtournament.repository.MemberRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import lombok.Getter;
-import lombok.Setter;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+@RestController
+@RequestMapping("/members")
+public class MemberController {
 
-@Getter
-@Setter
-@Entity
-public class Member {
+    private final MemberRepository memberRepository;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public MemberController(MemberRepository MemberRepository) {
+        this.memberRepository = MemberRepository;
+    }
 
-    private String name;
-    private String address;
-    private String email;
-    private String phoneNum;
-    private LocalDate startDate;
-    private int duration;
+    @GetMapping
+    public List<Member> getAllMembers() {
+        return memberRepository.findAll();
+    }
 
-    @ManyToMany(mappedBy = "members")
-    private Set<Tournament> tournaments = new HashSet<>();
+    @PostMapping
+    public Member createMember(@RequestBody Member member) {
+        return memberRepository.save(member);
+    }
 
-    public Member() {}
+    @GetMapping("/{id}")
+    public ResponseEntity<Member> getMemberById(@PathVariable Long id) {
+        return memberRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-    public Member(String name, String address, String email, String phoneNum, LocalDate startDate, int duration) {
-        this.name = name;
-        this.address = address;
-        this.email = email;
-        this.phoneNum = phoneNum;
-        this.startDate = startDate;
-        this.duration = duration;
+    @GetMapping("/search")
+    public List<Member> searchMembers(@RequestParam(required = false) String name) {
+        if (name != null) {
+            return memberRepository.findByNameContainingIgnoreCase(name);
+        }
+        return memberRepository.findAll();
     }
 }
