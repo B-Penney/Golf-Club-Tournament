@@ -1,61 +1,61 @@
 package org.golfclub.golfclubtournament.controller;
 
 import org.golfclub.golfclubtournament.model.Tournament;
-import org.golfclub.golfclubtournament.repository.MemberRepository;
-import org.golfclub.golfclubtournament.repository.TournamentRepository;
+import org.golfclub.golfclubtournament.service.TournamentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/tournaments")
 public class TournamentController {
 
-    private final TournamentRepository tournamentRepository;
-    private final MemberRepository memberRepository;
+    private final TournamentService tournamentService;
 
-    public TournamentController(TournamentRepository TournamentRepository, MemberRepository MemberRepository) {
-        this.tournamentRepository = TournamentRepository;
-        this.memberRepository = MemberRepository;
+    public TournamentController(TournamentService tournamentService) {
+        this.tournamentService = tournamentService;
     }
 
     @GetMapping
     public List<Tournament> getAllTournaments() {
-        return tournamentRepository.findAll();
+        return tournamentService.getAllTournaments();
     }
 
     @PostMapping
     public Tournament createTournament(@RequestBody Tournament tournament) {
-        return tournamentRepository.save(tournament);
+        return tournamentService.addTournament(tournament);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Tournament> getTournamentById(@PathVariable Long id) {
-        return tournamentRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Tournament tournament = tournamentService.getTournamentById(id);
+        return tournament != null ? ResponseEntity.ok(tournament) : ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Tournament> updateTournament(@PathVariable Long id, @RequestBody Tournament updatedTournament) {
+        Tournament tournament = tournamentService.updateTournament(id, updatedTournament);
+        return tournament != null ? ResponseEntity.ok(tournament) : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTournament(@PathVariable Long id) {
+        boolean deleted = tournamentService.deleteTournament(id);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
     @PostMapping("/{tournamentId}/members/{memberId}")
     public ResponseEntity<Tournament> addMemberToTournament(
             @PathVariable Long tournamentId, @PathVariable Long memberId) {
-        Optional<Tournament> tournamentOpt = tournamentRepository.findById(tournamentId);
-        Optional<Member> memberOpt = memberRepository.findById(memberId);
-        if (tournamentOpt.isPresent() && memberOpt.isPresent()) {
-            Tournament tournament = tournamentOpt.get();
-            tournament.getMembers().add(memberOpt.get());
-            tournamentRepository.save(tournament);
-            return ResponseEntity.ok(tournament);
-        }
-        return ResponseEntity.notFound().build();
+        Tournament tournament = tournamentService.addMemberToTournament(tournamentId, memberId);
+        return tournament != null ? ResponseEntity.ok(tournament) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/search")
     public List<Tournament> searchTournaments(@RequestParam(required = false) String location) {
-        if (location != null) {
-            return tournamentRepository.findByLocationContainingIgnoreCase(location);
-        }
-        return tournamentRepository.findAll();
+        return (location != null) ? tournamentService.getTournamentByLocation(location)
+                : tournamentService.getAllTournaments();
     }
 }
+
