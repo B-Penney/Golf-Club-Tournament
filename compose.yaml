@@ -1,11 +1,10 @@
 version: '3'
 services:
   myapp-main:
-    image: bptracking:latest
+    image: golf-club-tournament:latest
     ports:
-      - 8080:8080
+      - "8080:8080"
     environment:
-      #      - spring.datasource.url=jdbc:mysql://host.docker.internal:3306/
-      - spring.datasource.url=jdbc:mysql://
-      - spring.datasource.password=jordan1234
-      - spring.datasource.username=admin
+      spring.datasource.url: "jdbc:mysql://localhost:3306/golf_tournament"
+      spring.datasource.username: "root"
+      spring.datasource.password: "H3r31$@$tup1dp@$$w0rd"
