@@ -14,6 +14,7 @@ services:
 
   db:
     image: mysql:8.0
+    container_name: golf-club-tournament
     environment:
       MYSQL_DATABASE: golf_tournament
       MYSQL_ROOT_PASSWORD: H3r31$@$tup1dp@$$w0rd
